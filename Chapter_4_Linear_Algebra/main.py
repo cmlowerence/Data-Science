@@ -115,10 +115,6 @@ B = [
     [5,6]
 ]
 
-# Number of rows
-num_rows_A = len(A)
-num_col_A = len(A[0])
-
 from typing import Tuple
 
 def shape(A:Matrix) -> Tuple[int, int]:
@@ -128,4 +124,42 @@ def shape(A:Matrix) -> Tuple[int, int]:
   return num_rows, num_cols
 
 assert shape([[1,2,3],[4,5,6]]) == (2,3)
+
+
+# Getting a matrix row
+def get_row(A: Matrix, i:int) -> Vector:
+  """Returns the i-it row of A (as a vector)"""
+  return A[i]
+
+def get_column(A: Matrix, j: int) -> Vector:
+  """Returns the j-th column of A (as a vector)"""
+  return [A_i[j]
+          for A_i in A]
+
+# Creating a matrix from the given the shape of matrix and the function for generating the elements. We can do it using a nested list comprehension:
+
+from typing import Callable
+
+def make_matrix(num_rows: int,
+                num_cols : int,
+                entry_fn : Callable[[int, int], float]) -> Matrix:
+  """
+  Returns a num_rows X num_cols matrix whose (i,j)-th entry is entry_fn(i,j)
+  """
+  return [[entry_fn(i,j)
+            for j in range(num_cols)]
+          for i in range(num_rows)]
+
+
+def identity_matrix(n: int) -> Matrix:
+  """Returns the n x n identity Matrix"""
+  return make_matrix(n, n, lambda i,j : 1 if i == j else 0)
+
+assert identity_matrix(5) == [[1, 0, 0, 0, 0],
+                              [0, 1, 0, 0, 0],
+                              [0, 0, 1, 0, 0],
+                              [0, 0, 0, 1, 0],
+                              [0, 0, 0, 0, 1]]
+
+
 
