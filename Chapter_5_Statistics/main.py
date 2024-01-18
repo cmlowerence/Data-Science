@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import random
 import string
 num_friends = [100, 49, 41, 40, 25, 39, 40, 47, 16, 11, 2, 16, 31, 16, 38, 15, 12, 11, 19, 33, 11, 36, 29, 44, 23, 21, 38, 11, 7, 1, 45, 9, 20, 49, 39, 46, 39, 16, 16, 13, 14, 26, 13, 48, 39, 35, 3, 3, 39, 18, 49, 35, 1, 13, 4, 19, 35, 11, 9, 47, 8, 11, 9, 11, 39, 39, 9, 45, 15, 36, 6, 29, 17, 35, 34, 2, 7, 33, 7, 29, 18, 31, 6, 32, 1, 42, 49, 3, 28, 30, 3, 15, 37, 4, 10, 39, 35, 30, 8, 22, 2, 5, 17, 32, 25, 2, 40, 8, 45, 10, 5, 21, 19, 36, 21, 11, 2, 4, 16, 13, 11, 26, 23, 46, 43, 46, 16, 5, 38, 31, 49, 1, 7, 2, 25, 7, 35, 20, 45, 33, 29, 6, 37, 23, 34, 30, 42, 5, 5, 2, 48, 23, 15, 2, 16, 17, 19, 13, 13, 24, 37, 23, 7, 22, 48, 47, 39, 45, 22, 23, 13, 20, 47, 44, 30, 38, 26, 20, 39, 6, 47, 38, 17, 11, 31, 39, 1, 43, 32, 28, 47, 34, 17, 42, 35, 25, 38, 6, 28, 26, 4, 42, 21, 12, 41, 18, 12, 17]
-print(num_friends)
 friends_counts = Counter(num_friends)
 xs = range(101)
 ys = [friends_counts[x] for x in xs]
@@ -90,8 +89,11 @@ def data_range(xs : List[float]) -> float:
 assert data_range(num_friends) == 99
 
 # Variance
+import sys
+if not "/Users/cmlowerence/Documents/Personal/Coding/Tutorials/Python/Data_Science" in sys.path:
+  sys.path.append("/Users/cmlowerence/Documents/Personal/Coding/Tutorials/Python/Data_Science")
+from Chapter_4_Linear_Algebra import main as L_A
 
-from..Chapter_4_Linear_Algebra.main import sum_of_squares
 
 def de_mean(xs: List[float]) -> List[float]:
   """Translate xs by subtracting its mean (so the result has mean 0)"""
@@ -104,5 +106,71 @@ def variance(xs: List[float]) -> float:
   
   n = len(xs)
   deviations = de_mean(xs)
-  return sum_of_squares(deviations) / (n - 1)
-print(variance(num_friends))
+  return L_A.sum_of_squares(deviations) / (n - 1)
+assert 241.15 < variance(num_friends) < 241.164
+
+import math
+
+def standard_deviation(xs: List[float]) -> float:
+  """The standard deviation is the square root of the variance"""
+  return math.sqrt(variance(xs))
+
+assert 15.51 < standard_deviation(num_friends)  < 15.53
+
+def interquartile_range(xs: List[float]) -> float:
+  """Returns the deference between the 75%-ile and the 25%-ile"""
+  return quantile(xs, 0.75) - quantile(xs, 0.25)
+
+assert interquartile_range(num_friends) == 27
+
+
+# ! Correlation
+from Chapter_4_Linear_Algebra.main import dot
+def covariance(xs : List[float], ys: List[float]) -> float:
+  assert len(xs) == len(ys), "xs and ys must have same numbers of elements"
+  return dot(de_mean(xs), de_mean(ys)) // (len(xs) - 1)
+
+
+def correlation(xs : List[float], ys: List[float]) -> float:
+  """Measures how much xs and ys vary in tandem about their means"""
+  stdev_x = standard_deviation(xs)
+  stdev_y = standard_deviation(ys)
+  if stdev_x > 0 and stdev_y > 0:
+    return covariance(xs, ys) / stdev_x / stdev_y
+  else:
+    return 0
+
+daily_minutes = [54, 125, 31, 79, 12, 90, 74, 61, 15, 58, 132, 73, 97, 56, 54, 148, 25, 143, 86, 101, 107, 11, 114, 115, 67, 22, 119, 69, 87, 58, 44, 87, 63, 17, 129, 10, 112, 91, 115, 34, 108, 89, 145, 85, 33, 75, 88, 126, 98, 29, 48, 44, 88, 10, 100, 115, 101, 49, 121, 74, 44, 119, 121, 57, 114, 137, 101, 81, 94, 67, 28, 78, 89, 101, 18, 56, 117, 127, 115, 122, 132, 104, 10, 40, 77, 23, 115, 115, 32, 76, 70, 95, 83, 118, 92, 118, 129, 97, 143, 64, 122, 46, 97, 46, 134, 55, 69, 57, 32, 81, 29, 48, 101, 142, 21, 22, 59, 15, 88, 29, 99, 42, 136, 85, 148, 106, 63, 38, 39, 36, 119, 119, 95, 111, 73, 139, 132, 31, 96, 74, 144, 146, 79, 139, 111, 149, 136, 50, 102, 107, 63, 48, 107, 32, 131, 53, 72, 36, 64, 41, 68, 92, 17, 135, 79, 25, 144, 91, 125, 147, 45, 79, 49, 76, 69, 72, 77, 63, 25, 93, 101, 18, 144, 144, 122, 89, 94, 11, 113, 143, 138, 14, 113, 89, 102, 31, 50, 112, 12, 99, 115, 36, 77, 121, 32, 149, 11, 28]
+
+daily_hours = [round(min/60,2) for min in daily_minutes]
+
+def Correlation_with_outlier():
+  plt.scatter(num_friends, daily_minutes)
+  plt.axis([0, 100, 0, 100])
+  plt.xlabel("# of friends")
+  plt.ylabel("Minutes per day")
+  plt.title("Correlation with an outlier")
+  plt.show()
+
+
+outlier = num_friends.index(100)
+num_friends_good = [x
+                    for i, x in enumerate(num_friends)
+                    if i != outlier]
+
+daily_minutes_good = [x
+                      for i, x in enumerate(daily_minutes)
+                      if i != outlier]
+
+daily_hours_good = [dm/60 for dm in daily_minutes_good]
+
+def correlation_after_removing_outlier():
+  plt.scatter(num_friends_good, daily_minutes_good)
+  plt.ylabel("Minutes per day")
+  plt.xlabel("Correlation after removing the outlier")
+  plt.title("Correlation After Removing Outlier")
+  plt.show()
+# correlation_after_removing_outlier()
+
+
+# ! Simpson's Paradox
